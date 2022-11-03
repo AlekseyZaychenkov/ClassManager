@@ -1,5 +1,5 @@
 """
-WSGI config for Photo_Gallery project.
+WSGI config for class_manager project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Photo_Gallery.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'class_manager.settings')
 
 application = get_wsgi_application()
