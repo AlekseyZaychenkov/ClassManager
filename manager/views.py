@@ -11,13 +11,36 @@ from manager.forms import *
 log = logging.getLogger(__name__)
 
 
-@login_required
+# @login_required
 def home(request):
-    pass
+    # TODO: fix authorization
+    # direction = DirectionOfTraining(curator=request.user)
+    direction = DirectionOfTraining(title='direct 01')
 
-#     gallery = __get_gallery(request)
-#     context = __get_basic_home_context(gallery)
-#
+    context = __get_basic_home_context(direction)
+
+    return render(request, "home.html", context)
+
+
+def __get_basic_home_context(direction):
+    context = dict()
+
+    # context["image_create_form"] = ImageCreateForm()
+    # context["image_edit_form"] = ImageEditForm()
+    # context["image_delete_form"] = ImageDeleteForm()
+    # context["media_root"] = os.sep + os.path.basename(os.path.normpath(MEDIA_ROOT)) + os.sep
+    # context["images"] = Image.objects.filter(gallery=gallery).values()
+
+    return context
+
+
+
+
+
+
+
+
+
 #     if request.POST:
 #         if request.POST['action'] == 'create_image':
 #             form = ImageCreateForm(request.POST or None, request.FILES or None)
@@ -29,8 +52,10 @@ def home(request):
 #         return HttpResponseRedirect('home')
 #
 #     return render(request, "home.html", context)
-#
-#
+
+
+
+
 # @login_required
 # def home_image_id(request, selected_image_id):
 #     gallery = __get_gallery(request)
@@ -84,23 +109,5 @@ def home(request):
 #     return render(request, "home.html", context)
 #
 #
-# def __get_gallery(request):
-#     if not Gallery.objects.filter(owner=request.user.pk).exists():
-#         gallery = Gallery(owner_id=request.user.pk)
-#         gallery.save()
-#     else:
-#         gallery = Gallery.objects.get(owner=request.user.pk)
-#
-#     return gallery
-#
-#
-# def __get_basic_home_context(gallery):
-#     context = dict()
-#
-#     context["image_create_form"] = ImageCreateForm()
-#     context["image_edit_form"] = ImageEditForm()
-#     context["image_delete_form"] = ImageDeleteForm()
-#     context["media_root"] = os.sep + os.path.basename(os.path.normpath(MEDIA_ROOT)) + os.sep
-#     context["images"] = Image.objects.filter(gallery=gallery).values()
-#
-#     return context
+
+

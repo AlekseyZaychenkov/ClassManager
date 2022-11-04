@@ -1,6 +1,6 @@
 from django.urls import path
 
-from manager.views import home\
+from manager.views import home
     # , home_image_id, home_image_id_action
 
 

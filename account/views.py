@@ -3,25 +3,26 @@ from django.contrib.auth.views import PasswordChangeView
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import render, redirect
-from account.forms import RegistrationForm, AccountAuthenticationForm, AccountUpdateForm
-from account.models import Account, AccountManager
+from account.forms import CuratorAuthenticationForm, CuratorUpdateForm
 from django.urls import reverse_lazy
 
+from manager.models import Curator
 
-def loginView(request):
+
+def login_view(request):
     context = dict()
     context["email_does_not_exist"] = False
     context["password_is_wrong"] = False
 
     if 'action' in request.POST and request.POST['action'] == 'go_to_login':
-        form = AccountAuthenticationForm(request.POST)
+        form = CuratorAuthenticationForm(request.POST)
     elif 'email' in request.POST and request.POST:
         context["email"] = request.POST['email']
         email = request.POST['email']
         password = request.POST['password']
-        form = AccountAuthenticationForm(request.POST)
+        form = CuratorAuthenticationForm(request.POST)
 
-        if not Account.objects.filter(email=email).exists():
+        if not Curator.objects.filter(email=email).exists():
             context["email_does_not_exist"] = True
         elif not authenticate(email=email, password=password):
             context["password_is_wrong"] = True
@@ -31,30 +32,16 @@ def loginView(request):
                 login(request, user)
                 return redirect('home')
     else:
-        form = AccountAuthenticationForm()
+        form = CuratorAuthenticationForm()
 
     context['form'] = form
 
     return render(request, "login.html", context)
 
 
-def logoutView(request):
+def logout_view(request):
     logout(request)
     return redirect("login")
-
-
-def registerView(request):
-    context = dict()
-    if request.POST:
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('home')
-    else:
-        form = RegistrationForm()
-    context['form'] = form
-    return render(request, "to_register.html", context)
 
 
 @login_required
@@ -75,15 +62,15 @@ def profile(request):
 @login_required
 def edit_profile(request):
     context = dict()
-    user = Account.objects.get(email=request.user.email)
+    user = Curator.objects.get(email=request.user.email)
 
     if request.POST and request.POST['action'] == 'save_profile':
-        form = AccountUpdateForm(request.POST, instance=user)
+        form = CuratorUpdateForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
             return redirect('profile')
     else:
-        form = AccountUpdateForm(initial={'email': request.user.email,
+        form = CuratorUpdateForm(initial={'email': request.user.email,
                                           'nick_name': request.user.nick_name})
     context['form'] = form
 

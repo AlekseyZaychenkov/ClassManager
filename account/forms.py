@@ -4,20 +4,12 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
 
 from account.models import Account
+from manager.models import Curator
 
 
-class RegistrationForm(UserCreationForm):
+class CuratorAuthenticationForm(forms.ModelForm):
     class Meta:
-        model = Account
-        fields = ("email",
-                  "nick_name",
-                  "password1",
-                  "password2")
-
-
-class AccountAuthenticationForm(forms.ModelForm):
-    class Meta:
-        model = Account
+        model = Curator
         fields = ('email', 'password')
 
     def clean(self):
@@ -29,7 +21,7 @@ class AccountAuthenticationForm(forms.ModelForm):
                 raise forms.ValidationError('Email or password is incorrect.')
 
 
-class AccountUpdateForm(forms.ModelForm):
+class CuratorUpdateForm(forms.ModelForm):
     email = forms.EmailField(required=True,
                              widget=forms.TextInput(attrs={'class': 'form-control'}))
     nick_name = forms.CharField(max_length=100,
@@ -37,7 +29,7 @@ class AccountUpdateForm(forms.ModelForm):
                                 widget=forms.TextInput(attrs={'class': 'form-control'}))
 
     class Meta:
-        model = Account
+        model = Curator
         fields = ("email",
                   "nick_name")
 

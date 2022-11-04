@@ -13,9 +13,35 @@
     {% endblock %}
     <hr>
     <div class="container-fluid">
-        {% block schedules %}
-        {% include 'home_center_panel.html' %}
-        {% endblock %}
+
+        <div class="row">
+            <div class="col-md-4 col-lg-4">
+                {% block groups_panel %}
+                {% include 'groups_panel.html' %}
+                {% endblock %}
+
+                {% block selected_group_panel %}
+                {% include 'selected_group_panel.html' %}
+                {% endblock %}
+            </div>
+
+            <div class="col-md-4 col-lg-4">
+                {% block current_group_panel %}
+                {% include 'current_group_panel.html' %}
+                {% endblock %}
+            </div>
+
+
+            <div class="col-md-4 col-lg-4">
+                {% block unassigned_students_panel %}
+                {% include 'unassigned_students_panel.html' %}
+                {% endblock %}
+
+                {% block selected_student_panel %}
+                {% include 'selected_student_panel.html' %}
+                {% endblock %}
+            </div>
+        </div>
     </div>
 </div>
 </body>

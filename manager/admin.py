@@ -10,7 +10,7 @@ class AcademicDisciplineAdmin(admin.ModelAdmin):
 
 
 class CuratorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'last_name', 'middle_name', 'gender', 'phone_number', 'direction_of_training')
+    list_display = ('name', 'direction_of_training', 'last_name', 'middle_name', 'gender', 'phone_number')
 
 
 class DirectionOfTrainingAdmin(admin.ModelAdmin):
@@ -33,4 +33,4 @@ class AccountAdmin(DjangoObjectActions, admin.ModelAdmin):
 admin.site.register(AcademicDiscipline, AcademicDisciplineAdmin)
 admin.site.register(Curator, CuratorAdmin)
 admin.site.register(DirectionOfTraining, DirectionOfTrainingAdmin)
-admin.site.register(Account, AccountAdmin)
+# admin.site.register(Account, AccountAdmin)

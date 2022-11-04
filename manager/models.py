@@ -1,6 +1,7 @@
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
 
+from account.models import Account
 
 MALE = 'M'
 FEMALE = 'F'
@@ -17,13 +18,13 @@ class DirectionOfTraining(models.Model):
         return self.title
 
 
-class Curator(models.Model):
+class Curator(Account):
     name = models.CharField(max_length=31, null=False, blank=False)
     last_name = models.CharField(max_length=31, null=True, blank=True)
     middle_name = models.CharField(max_length=31, null=True, blank=True)
     phone_number = PhoneNumberField(null=True, blank=True, unique=True)
-    gender = models.CharField(max_length=6, choices=GENDERS)
-    direction_of_training = models.OneToOneField(DirectionOfTraining, null=True, blank=True, on_delete=models.SET_NULL)
+    gender = models.CharField(max_length=6, null=True, blank=True, choices=GENDERS)
+    direction_of_training = models.OneToOneField(DirectionOfTraining, on_delete=models.CASCADE)
 
 
 class AcademicDiscipline(models.Model):
