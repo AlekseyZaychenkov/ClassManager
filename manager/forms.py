@@ -1,73 +1,144 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from phonenumber_field.modelfields import PhoneNumberField
 from django import forms
-
-# from manager.models import Image
-from manager.validators import validate_file_extension
-from manager.utils import delete_image
-
-from django import forms
-from django.contrib import admin
-from manager.models import DirectionOfTraining
-
+from manager.models import DirectionOfTraining, Student, GENDERS, StudyGroup
 
 log = logging.getLogger(__name__)
 
 
-# class DirectionOfTrainingForm(forms.ModelForm):
-#
-#     class Meta:
-#         model = DirectionOfTraining
-#         fields = ['title']
-#
-# class DirectionOfTrainingAdmin(admin.ModelAdmin):
-#     fields = ['title']
-#     form = DirectionOfTrainingForm
+class StudyGroupCreateForm(forms.ModelForm):
+    number = forms.CharField(required=True)
+    direction_id = forms.CharField(required=True)
+
+    def save(self, commit=True):
+        group = self.instance
+
+        direction = DirectionOfTraining.objects.get(id=self.cleaned_data["direction_id"])
+        group.direction = direction
+
+        if commit:
+            direction.save()
+            group.save()
+
+    class Meta:
+        model = StudyGroup
+        exclude = ('direction',)
 
 
+class StudyGroupeEditForm(forms.ModelForm):
+    id = forms.CharField(required=True)
+    number = forms.CharField(required=True)
 
-# class ImageCreateForm(forms.ModelForm):
-#     image_field = forms.ImageField(widget=forms.ClearableFileInput(), validators=[validate_file_extension])
-#     text = forms.CharField(widget=forms.Textarea(attrs={"rows": 3, "cols": 10}), required=False)
-#
-#     def set_gallery(self, gallery):
-#         image = self.instance
-#         image.gallery = gallery
-#         self.instance = image
-#
-#     def save(self, commit=True):
-#         image = self.instance
-#         if commit:
-#             image.save()
-#
-#         return image
-#
-#     class Meta:
-#         model = Image
-#         exclude = ('gallery', )
+    def save(self, commit=True):
+        group = StudyGroup.objects.get(id=self.cleaned_data["id"])
+
+        group.number = self.cleaned_data["number"]
+
+        if commit:
+            group.save()
+
+    class Meta:
+        model = StudyGroup
+        exclude = ('direction',)
 
 
-# class ImageEditForm(forms.ModelForm):
-#     image_field = forms.ImageField(widget=forms.ClearableFileInput(), validators=[validate_file_extension], required=False)
-#     text = forms.CharField(widget=forms.Textarea(attrs={"rows": 3, "cols": 10}), required=False)
-#
-#     def save(self, commit=True):
-#         image = self.instance
-#         if commit:
-#             image.save()
-#
-#         return image
-#
-#     class Meta:
-#         model = Image
-#         exclude = ('image_field', 'text', 'gallery',)
+class StudyGroupDeleteForm(forms.Form):
+    group_id = forms.CharField(required=True)
+
+    def delete(self):
+        group_id = self.data["group_id"]
+        if StudyGroup.objects.filter(id=group_id).exists():
+            StudyGroup.objects.get(id=group_id).delete()
+        else:
+            log.error(f"No student with id='{group_id}' in data base!")
 
 
-# class ImageDeleteForm(forms.Form):
-#     image_id = forms.CharField(required=True)
-#
-#     def delete(self):
-#         image_id = self.data["image_id"]
-#         image = Image.objects.get(id=image_id)
-#         delete_image(image)
+class StudentCreateForm(forms.ModelForm):
+    name = forms.CharField(required=True)
+    last_name = forms.CharField(required=True)
+    middle_name = forms.CharField(required=False)
+    phone_number = PhoneNumberField()
+    gender = forms.ChoiceField(choices=GENDERS)
+    direction_id = forms.CharField(required=True)
+
+    def save(self, commit=True):
+        student = self.instance
+
+        direction = DirectionOfTraining.objects.get(id=self.cleaned_data["direction_id"])
+        student.direction = direction
+
+        if commit:
+            direction.save()
+            student.save()
+
+    class Meta:
+        model = Student
+        exclude = ('study_group', 'direction',)
+
+
+class StudentEditForm(forms.ModelForm):
+    id = forms.CharField(required=True)
+    name = forms.CharField(required=True)
+    last_name = forms.CharField(required=True)
+    middle_name = forms.CharField(required=False)
+    phone_number = PhoneNumberField()
+    gender = forms.ChoiceField(choices=GENDERS)
+
+    def save(self, commit=True):
+        student = Student.objects.get(id=self.cleaned_data["id"])
+
+        student.name = self.cleaned_data["name"]
+        student.last_name = self.cleaned_data["last_name"]
+        student.middle_name = self.cleaned_data["middle_name"]
+        student.phone_number = self.cleaned_data["phone_number"]
+        student.gender = self.cleaned_data["gender"]
+
+        if commit:
+            student.save()
+
+    class Meta:
+        model = Student
+        exclude = ('study_group', 'direction',)
+
+
+class StudentAddToGroupForm(forms.Form):
+    student_id = forms.CharField(required=True)
+
+    def add(self, group_id):
+        student_id = self.data["student_id"]
+
+        if not group_id:
+            log.error(f"No group was selected. Excluding student from current group.")
+
+            student = Student.objects.get(id=student_id)
+            group = student.study_group
+            student.study_group = None
+            student.save()
+            group.save()
+            return
+
+        if not StudyGroup.objects.filter(id=group_id).exists():
+            log.error(f"No group with id='{group_id} exists in data base!")
+            return
+
+        if Student.objects.filter(id=student_id).exists():
+            group = StudyGroup.objects.filter(id=group_id).get()
+            student = Student.objects.get(id=student_id)
+            student.study_group = group
+            student.save()
+            group.save()
+        else:
+            log.error(f"No student with id='{student_id}' exists in data base!")
+
+
+class StudentDeleteForm(forms.Form):
+    student_id = forms.CharField(required=True)
+
+    def delete(self):
+        student_id = self.data["student_id"]
+        if Student.objects.filter(id=student_id).exists():
+            Student.objects.get(id=student_id).delete()
+        else:
+            log.error(f"No student with id='{student_id}' in data base!")

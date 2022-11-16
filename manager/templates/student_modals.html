@@ -1,0 +1,167 @@
+{% load widget_tweaks %} {% block content %}
+
+<div class="modal fade" id="student_create_modal" tabindex="-1" role="dialog" aria-labelledby="student_create_modal_label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Create new student</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form enctype="multipart/form-data" method="post" class="mt-3">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <label>Name:</label>
+                        {% render_field student_create_form.name class="form-control" %}
+                        {{ student_create_form.text.errors }}
+                    </div>
+                    <div class="form-row">
+                        <label>Last name:</label>
+                        {% render_field student_create_form.last_name class="form-control" %}
+                        {{ student_create_form.text.errors }}
+                    </div>
+                    <div class="form-row">
+                        <label>Middle name:</label>
+                        {% render_field student_create_form.middle_name class="form-control" %}
+                        {{ student_create_form.text.errors }}
+                    </div>
+                    <div class="form-row">
+                        <label>Phone number:</label>
+                        {% render_field student_create_form.phone_number class="form-control" %}
+                        {{ student_create_form.phone_number.errors }}
+                    </div>
+                    <div class="form-row">
+                        <label>Gender:</label>
+                        {% render_field student_create_form.gender class="form-control" %}
+                        {{ student_create_form.text.errors }}
+                    </div>
+
+                    <div class="d-none">
+                        {% render_field student_create_form.direction_id|append_attr:"readonly:readonly" class="form-control" value=direction_id %}
+                    </div>
+                    <hr>
+
+                    <div class="float-right">
+                        <button class="btn btn-primary" type="submit" name="action" value="create_student">Create</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="student_edit_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Edit student info</h5>
+<!--                <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                    <span aria-hidden="true">&times;</span>-->
+<!--                </button>-->
+
+                        <a type="button" class="close"
+                           href="{% url 'home' %}">
+                            <span aria-hidden="true">&times;</span>
+                        </a>
+            </div>
+
+            <div class="modal-body">
+                <form enctype="multipart/form-data" method="post" class="mt-3">
+                    {% csrf_token %}
+                    <div class="d-none">
+                        {% render_field student_edit_form.id|append_attr:"readonly:readonly" class="form-control" value=current_student_id %}
+                    </div>
+                    <div class="form-row">
+                        <label>Name:</label>
+                        {% render_field student_edit_form.name class="form-control" %}
+                        {{ student_edit_form.name.errors }}
+                    </div>
+                    <div class="form-row">
+                        <label>Last name:</label>
+                        {% render_field student_edit_form.last_name class="form-control" %}
+                        {{ student_edit_form.text.errors }}
+                    </div>
+                    <div class="form-row">
+                        <label>Middle name:</label>
+                        {% render_field student_edit_form.middle_name class="form-control" %}
+                        {{ student_edit_form.text.errors }}
+                    </div>
+                    <div class="form-row">
+                        <label>Phone number:</label>
+                        {% render_field student_edit_form.phone_number class="form-control" %}
+                        {{ student_edit_form.phone_number.errors }}
+                    </div>
+                    <div class="form-row">
+                        <label>Gender:</label>
+                        {% render_field student_edit_form.gender class="form-control" %}
+                        {{ student_edit_form.text.errors }}
+                    </div>
+
+                    <div class="d-none">
+                        {% render_field student_edit_form.direction_id|append_attr:"readonly:readonly" class="form-control" value=direction_id %}
+                    </div>
+                    <hr>
+
+                    <div class="float-right">
+                        <button class="btn btn-primary btn-sm" type="submit" name="action" value="edit_student">Save changes</button>
+                        <button type="button" class="btn btn-warning btn-sm" data-dismiss="modal">Undo changes</button>
+
+                        {% if current_student_id != None %}
+                            <a type="button" class="btn btn-danger btn-sm"
+                               href="{% url 'home_student_with_action' current_student_id=current_student_id context_action='delete_student' %}">
+                                Delete student</a>
+                               <script>
+                                   {% if context_action == 'delete_student' %}
+                                       $(function() {
+                                           $('#student_delete_modal').modal({show: true});
+                                       });
+                                   {% endif %}
+                               </script>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="student_delete_modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete a student</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to delete the student?</p>
+                <form method="post" class="mt-3"> {% csrf_token %}
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <div class="d-none">
+                        {% render_field student_delete_form.student_id|append_attr:"readonly:readonly" class="form-control" value=current_student_id %}
+                    </div>
+                    <button class="btn btn-danger" type="submit" name="action" value="delete_student">Yes</button>
+
+<!--                    <a class="dropdown-item" id="deleteButton" href="{% url 'home' %}" data-toggle="modal" data-target="#logoutModal">Logout</a>-->
+
+
+<!--                    <script>-->
+<!--                        $(document).on('hidden.bs.modal','#student_delete_modal', function () {-->
+<!--                          window.location = $("#deleteButton").attr("href");-->
+<!--                        });-->
+<!--                    </script>-->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

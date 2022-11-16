@@ -2,6 +2,13 @@
 {% load static %}
 
 
+<style>
+.table td, .table th {
+    min-width: 6vw;
+    max-width: 6vw;
+}
+</style>
+
 <html>
 <head>
     <link rel="stylesheet" href="{% static 'my_css/main_pages.css' %}">
@@ -13,33 +20,34 @@
     {% endblock %}
     <hr>
     <div class="container-fluid">
-
         <div class="row">
             <div class="col-md-4 col-lg-4">
-                {% block groups_panel %}
-                {% include 'groups_panel.html' %}
-                {% endblock %}
-
-                {% block selected_group_panel %}
-                {% include 'selected_group_panel.html' %}
-                {% endblock %}
+                <div class="card flex-fill d-flex h-100 justify-content-start">
+                    {% block groups_panel %}
+                    {% include 'groups_panel.html' %}
+                    {% endblock %}
+                </div>
             </div>
 
             <div class="col-md-4 col-lg-4">
-                {% block current_group_panel %}
-                {% include 'current_group_panel.html' %}
-                {% endblock %}
+                <div class="card flex-fill d-flex h-100 justify-content-end">
+                    {% if current_group_id != None %}
+                        <div class="flex-fill">
+                            {% block current_group_panel %}
+                            {% include 'current_group_panel.html' %}
+                            {% endblock %}
+                        </div>
+                    {% endif %}
+                </div>
             </div>
-
-
             <div class="col-md-4 col-lg-4">
-                {% block unassigned_students_panel %}
-                {% include 'unassigned_students_panel.html' %}
-                {% endblock %}
-
-                {% block selected_student_panel %}
-                {% include 'selected_student_panel.html' %}
-                {% endblock %}
+                <div class="card flex-fill flex-fill d-flex h-100 justify-content-end">
+                    <div class="flex-fill">
+                        {% block unassigned_students_panel %}
+                        {% include 'unassigned_students_panel.html' %}
+                        {% endblock %}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

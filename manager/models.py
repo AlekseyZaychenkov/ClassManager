@@ -37,12 +37,20 @@ class AcademicDiscipline(models.Model):
 
 class StudyGroup(models.Model):
     number = models.CharField(max_length=31, null=False, blank=False)
+    direction = models.ForeignKey(DirectionOfTraining, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = 'number',
 
 
 class Student(models.Model):
     name = models.CharField(max_length=31, null=False, blank=False)
     last_name = models.CharField(max_length=31, null=True, blank=True)
     middle_name = models.CharField(max_length=31, null=True, blank=True)
-    phone_number = PhoneNumberField(max_length=31, null=True, blank=True, unique=True)
+    phone_number = PhoneNumberField(max_length=31, null=True, blank=True, unique=False)
     gender = models.CharField(max_length=6, choices=GENDERS)
     study_group = models.ForeignKey(StudyGroup, null=True, blank=True, on_delete=models.SET_NULL)
+    direction = models.ForeignKey(DirectionOfTraining, on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = 'last_name', 'name', 'middle_name',

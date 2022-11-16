@@ -1,0 +1,105 @@
+{% load widget_tweaks %} {% block content %}
+
+<div class="modal fade" id="group_create_modal" tabindex="-1" role="dialog" aria-labelledby="group_create_modal_label" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Create new group</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form enctype="multipart/form-data" method="post" class="mt-3"> {% csrf_token %}
+                    <div class="form-row">
+                        <label>Number:</label>
+                        {% render_field group_create_form.number class="form-control" %}
+                        {{ group_create_form.text.errors }}
+                    </div>
+                    <div class="d-none">
+                        {% render_field group_create_form.direction_id|append_attr:"readonly:readonly" class="form-control" value=direction_id %}
+                    </div>
+                    <hr>
+
+                    <div class="float-right">
+                        <button class="btn btn-primary" type="submit" name="action" value="create_group">Create</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="group_edit_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Edit the group</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form enctype="multipart/form-data" method="post" class="mt-3"> {% csrf_token %}
+                    <div class="col pl-4 pr-4">
+                        <div class="d-none">
+                            {% render_field group_edit_form.id|append_attr:"readonly:readonly" class="form-control" value=current_group_id %}
+                        </div>
+                        <div class="form-row">
+                            <label>Number:</label>
+                            {% render_field group_edit_form.number class="form-control" %}
+                            {{ group_edit_form.text.errors }}
+                        </div>
+
+                        <div class="float-right mt-4 mb-3">
+                            <button class="btn btn-primary btn-sm" type="submit" name="action" value="edit_group">Save changes</button>
+                            <button type="button" class="btn btn-warning btn-sm" data-dismiss="modal">Undo changes</button>
+                            <a type="button" class="btn btn-danger btn-sm"
+                               href="{% url 'home_group_with_action' current_group_id=current_group_id context_action='delete_group' %}">
+                                Delete group</a>
+                               <script>
+                                   {% if context_action == 'delete_group' %}
+                                       $(function() {
+                                           $('#group_delete_modal').modal({show: true});
+                                       });
+                                   {% endif %}
+                               </script>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="group_delete_modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete a group</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to delete the group?</p>
+                <form method="post" class="mt-3"> {% csrf_token %}
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                    <div class="d-none">
+                        {% render_field group_delete_form.group_id|append_attr:"readonly:readonly" class="form-control" value=current_group_id %}
+                    </div>
+                    <button class="btn btn-danger" type="submit" name="action" value="delete_group">Yes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock content %}

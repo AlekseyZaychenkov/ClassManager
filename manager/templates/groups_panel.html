@@ -1,9 +1,71 @@
 {% extends 'base.html' %} {% load widget_tweaks %} {% block content %}
 
 
-<div class="card">
+<ul class="nav justify-content-center">
     <h4>Groups</h4>
-</div>
+</ul>
 
+<ul class="nav justify-content-end mr-2 mb-2">
+    <a type="button" class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#group_create_modal">Create new group</a>
+</ul>
+
+
+<table class="table">
+    <thead>
+    <tr>
+        <th scope="col">Number</th>
+        <th scope="col">Total students</th>
+        <th scope="col"></th>
+    </tr>
+
+    </thead>
+    <tbody>
+        {% for group, number in groups_to_numbers.items %}
+            {% if group == current_group %}
+                <tr class='clickable-row table-active' data-href="{% url 'home_current_group' current_group_id=group.id %}">
+            {% else %}
+                <tr class='clickable-row' data-href="{% url 'home_current_group' current_group_id=group.id %}">
+            {% endif %}
+                    <td>
+                        {{group.number}}
+                    </td>
+                    <td>
+                        {{number}}
+                    </td>
+                    <td>
+                        <form method="post"> {% csrf_token %}
+                            <div class="float-right">
+                                <a type="button" class="btn btn-sm btn-dark"
+                                   href="{% url 'home_group_with_action' current_group_id=group.id context_action='edit_group' %}">Edit Group</a>
+                                <script>
+                                    {% if context_action == 'edit_group' %}
+                                        $(function() {
+                                          $('#group_edit_modal').modal({show: true});
+                                        });
+                                    {% endif %}
+                                </script>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+
+            <script>
+                jQuery(document).ready(function($) {
+                    $(".clickable-row").click(function() {
+                        window.location = $(this).data("href");
+                    });
+                });
+            </script>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+
+
+{% block group_modals %}
+{% include 'group_modals.html' %}
+{% endblock %}
 
 {% endblock content %}
